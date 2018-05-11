@@ -16,3 +16,5 @@ TensorFlow的一些练习
 - [《官方文档练习》](tensorflow文档)
     - [mnist_basic_learn.py](tensorflow文档/mnist_basic_learn.py)：感知机实现手写数字
     - [minist_deep_learn.py](tensorflow文档/minist_deep_learn.py)：卷积网络实现手写数字
+- [ 《强化学习》](强化学习)
+    - [policy_based](强化学习/policy_based)：基于策略方法的强化学习
