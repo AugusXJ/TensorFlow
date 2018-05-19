@@ -1,6 +1,3 @@
-"""
-13年版本DQN玩CartPole
-"""
 
 # import gym
 import tensorflow as tf
@@ -9,7 +6,6 @@ import random
 from collections import deque
 from retro_contest.local import make
 
-ENV_NAME = 'CartPole-v0'
 EPISODE = 10000  # Episode limitation
 STEP = 300  # Step limitation in an episode
 TEST = 10
@@ -17,8 +13,8 @@ TEST = 10
 GAMMA = 0.9  # discount factor for target Q
 INITIAL_EPSILON = 0.5  # starting value of epsilon
 FINAL_EPSILON = 0.01  # final value of epsilon
-REPLAY_SIZE = 10  # experience replay buffer size
-BATCH_SIZE = 8  # size of minibatch
+REPLAY_SIZE = 1000  # experience replay buffer size
+BATCH_SIZE = 32  # size of minibatch
 
 
 class DQN:
@@ -33,13 +29,14 @@ class DQN:
         self.state_dim_row = env.observation_space.shape[0]
         self.state_dim_col = env.observation_space.shape[1]
         self.state_dim_channel = env.observation_space.shape[2]
-        self.action_dim = env.action_space.n
+        self.action_dim = 7
         self.state_input = tf.placeholder(tf.float32,
                                           [None,
                                            self.state_dim_row,
                                            self.state_dim_col,
-                                           self.state_dim_channel])      # 输入空间
-        self.action_input = tf.placeholder(tf.float32, [None, self.action_dim])  # 动作空间
+                                           self.state_dim_channel],
+                                          name='state_input')      # 输入空间
+        self.action_input = tf.placeholder(tf.float32, [None, self.action_dim], name='action_input')  # 动作空间
         self.keep_prob = tf.placeholder("float")
 
         self.Q_value = self.create_q_network()                                  # 神经网络计算的Q值
@@ -49,6 +46,40 @@ class DQN:
         # Init session
         self.session = tf.InteractiveSession()
         self.session.run(tf.global_variables_initializer())
+
+    @staticmethod
+    def onehot_action(action):
+        """
+        将动作转为到动作空间中
+        原12维向量：B, A, MODE, START, UP, DOWN, LEFT, RIGHT, C, Y, X, Z
+        动作空间：{{LEFT}, {RIGHT}, {LEFT, DOWN}, {RIGHT, DOWN}， {DOWN}, {DOWN, B}, {B}}
+        :param action: 
+        :return: 
+        """
+        dic = {
+            0: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            1: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            2: [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+            3: [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+            4: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            5: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            6: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+        return dic[action]
+
+    @staticmethod
+    def dehot_action(action):
+        """
+        将12维action转化为8维action
+        :param action: 
+        :return: 
+        """
+        for i in range(7):
+            if DQN.onehot_action(i) == action:
+                action = [0] * 7
+                action[i] = 1
+                return action
+        raise RuntimeError("wrong action", action)
 
     # 卷积和池化
     @staticmethod
@@ -113,13 +144,13 @@ class DQN:
         :param done: 
         :return: 
         """
-        one_hot_action = np.zeros(self.action_dim)
-        one_hot_action[action] = 1
-        self.replay_buffer.append((state, one_hot_action, reward, next_state, done))
+        action = self.dehot_action(action)
+        self.replay_buffer.append((state, action, reward, next_state, done))
         if len(self.replay_buffer) > REPLAY_SIZE:
             self.replay_buffer.popleft()
 
         if len(self.replay_buffer) > BATCH_SIZE:
+            print("begin train")
             self.train_q_network()
 
     def train_q_network(self):
@@ -133,7 +164,7 @@ class DQN:
 
         # Step 2: calculate y
         y_batch = []
-        q_value_batch = self.Q_value.eval(feed_dict={self.state_input: next_state_batch})
+        q_value_batch = self.Q_value.eval(feed_dict={self.state_input: next_state_batch, self.keep_prob: 1.0})
         for i in range(0, BATCH_SIZE):
             done = minibatch[i][4]
             if done:
@@ -141,10 +172,12 @@ class DQN:
             else:
                 y_batch.append(reward_batch[i] + GAMMA * np.max(q_value_batch[i]))
 
+        print("train ############---")
         self.optimizer.run(feed_dict={
             self.y_input: y_batch,
             self.action_input: action_batch,
-            self.state_input: state_batch
+            self.state_input: state_batch,
+            self.keep_prob: 1.0
         })
 
     def egreedy_action(self, state):
@@ -153,15 +186,18 @@ class DQN:
             self.keep_prob: 1.0
         })[0]
         if random.random() <= self.epsilon:
-            return random.randint(0, self.action_dim - 1)
+            index = random.randint(0, self.action_dim - 1)
         else:
-            return np.argmax(q_value)
+            index = np.argmax(q_value)
+        return self.onehot_action(index)
         # self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON) / 10000
 
     def action(self, state):
-        return np.argmax(self.Q_value.eval(feed_dict={
-            self.state_input: [state]
+        index = np.argmax(self.Q_value.eval(feed_dict={
+            self.state_input: [state],
+            self.keep_prob: 0.5
         })[0])
+        return self.onehot_action(index)
 
 
 def main():
@@ -177,6 +213,7 @@ def main():
             action = agent.egreedy_action(state)  # e-greedy action for train
             print(action)
             next_state, reward, done, _ = env.step(action)
+            # env.render()
             # Define reward for agent
             reward_agent = -1 if done else 0.1
             agent.perceive(state, action, reward, next_state, done)
