@@ -1,20 +1,22 @@
-# TensorFlowÊµÕ½
+# TensorFlowå®æˆ˜
 -----------
 
 ## Note
-TensorFlowµÄÒ»Ğ©Á·Ï°
+TensorFlowçš„ä¸€äº›ç»ƒä¹ 
 
 ## Content
 
-- [¡¶TensorFlowÊµÕ½¡·](TensorFlowÊµÕ½)
-  - [CNN](TensorFlowÊµÕ½/CNN)£º¾í»ıÉñ¾­ÍøÂç
-  - [LSTM](TensorFlowÊµÕ½/LSTM)
-  - [mnist](TensorFlowÊµÕ½/mnist)
-  - [multilayer_perceptron](TensorFlowÊµÕ½/multilayer_perceptron)£º¶à²ã¸ĞÖª»ú
-  - [RNN](TensorFlowÊµÕ½/RNN)£ºÑ­»·Éñ¾­ÍøÂç
-  - [self_encode](TensorFlowÊµÕ½/self_encode)£º×Ô±àÂëÆ÷
-- [¡¶¹Ù·½ÎÄµµÁ·Ï°¡·](tensorflowÎÄµµ)
-    - [mnist_basic_learn.py](tensorflowÎÄµµ/mnist_basic_learn.py)£º¸ĞÖª»úÊµÏÖÊÖĞ´Êı×Ö
-    - [minist_deep_learn.py](tensorflowÎÄµµ/minist_deep_learn.py)£º¾í»ıÍøÂçÊµÏÖÊÖĞ´Êı×Ö
-- [ ¡¶Ç¿»¯Ñ§Ï°¡·](Ç¿»¯Ñ§Ï°)
-    - [policy_based](Ç¿»¯Ñ§Ï°/policy_based)£º»ùÓÚ²ßÂÔ·½·¨µÄÇ¿»¯Ñ§Ï°
+- [ã€ŠTensorFlowå®æˆ˜ã€‹](TensorFlowå®æˆ˜)
+  - [CNN](TensorFlowå®æˆ˜/CNN)ï¼šå·ç§¯ç¥ç»ç½‘ç»œ
+  - [LSTM](TensorFlowå®æˆ˜/LSTM)
+  - [mnist](TensorFlowå®æˆ˜/mnist)
+  - [multilayer_perceptron](TensorFlowå®æˆ˜/multilayer_perceptron)ï¼šå¤šå±‚æ„ŸçŸ¥æœº
+  - [RNN](TensorFlowå®æˆ˜/RNN)ï¼šå¾ªç¯ç¥ç»ç½‘ç»œ
+  - [self_encode](TensorFlowå®æˆ˜/self_encode)ï¼šè‡ªç¼–ç å™¨
+- [ã€Šå®˜æ–¹æ–‡æ¡£ç»ƒä¹ ã€‹](tensorflowæ–‡æ¡£)
+    - [mnist_basic_learn.py](tensorflowæ–‡æ¡£/mnist_basic_learn.py)ï¼šæ„ŸçŸ¥æœºå®ç°æ‰‹å†™æ•°å­—
+    - [minist_deep_learn.py](tensorflowæ–‡æ¡£/minist_deep_learn.py)ï¼šå·ç§¯ç½‘ç»œå®ç°æ‰‹å†™æ•°å­—
+- [ ã€Šå¼ºåŒ–å­¦ä¹ ã€‹](å¼ºåŒ–å­¦ä¹ )
+    - [policy_based](å¼ºåŒ–å­¦ä¹ /policy_based)ï¼šåŸºäºç­–ç•¥æ–¹æ³•çš„å¼ºåŒ–å­¦ä¹ 
+    - [value_based](value_based)ï¼šå€¼è¿­ä»£å¼ºåŒ–å­¦ä¹ 
+	- [sonic_RL](sonic_RL)ï¼šopenALå¼€è®¾çš„ç´¢å°¼åˆºçŒ¬çš„å¼ºåŒ–å­¦ä¹ æ¯”èµ›
