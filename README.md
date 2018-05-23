@@ -7,6 +7,7 @@ TensorFlow的一些练习
 ## Content
 
 - [《TensorFlow实战黄文坚》](TensorFlow实战)
+  - [4. TensorFlow实现自编码器及多层感知机](TensorFlow实战/4.%20TensorFlow实现自编码器及多层感知机)
   - [CNN](TensorFlow实战/CNN)：卷积神经网络
   - [LSTM](TensorFlow实战/LSTM)
   - [mnist](TensorFlow实战/mnist)
