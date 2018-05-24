@@ -12,6 +12,7 @@ TensorFlow的一些练习
   - [5. TensorFlow实现卷积神经网络](TensorFlow实战/5.%20TensorFlow实现卷积神经网络)
   - [7. TensorFlow实现循环神经网络及Word2Vec](TensorFlow实战/7.%20TensorFlow实现循环神经网络及Word2Vec)
   - [8. TensorFlow实现深度强化学习](TensorFlow实战/8.%20TensorFlow实现深度强化学习)
+  - [9. TensorBoard 多GPU并行及分布式并行](TensorFlow实战/9.%20TensorBoard%20多GPU并行及分布式并行)
 - [《官方文档练习》](tensorflow文档)
     - [mnist_basic_learn.py](tensorflow文档/mnist_basic_learn.py)：感知机实现手写数字
     - [minist_deep_learn.py](tensorflow文档/minist_deep_learn.py)：卷积网络实现手写数字
