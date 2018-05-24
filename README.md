@@ -8,7 +8,7 @@ TensorFlow的一些练习
 
 - [《TensorFlow实战黄文坚》](TensorFlow实战)
   - [4. TensorFlow实现自编码器及多层感知机](TensorFlow实战/4.%20TensorFlow实现自编码器及多层感知机)
-  - [CNN](TensorFlow实战/CNN)：卷积神经网络
+  - [5. TensorFlow实现卷积神经网络](TensorFlow实战/5.%20TensorFlow实现卷积神经网络)
   - [LSTM](TensorFlow实战/LSTM)
   - [mnist](TensorFlow实战/mnist)
   - [multilayer_perceptron](TensorFlow实战/multilayer_perceptron)：多层感知机
