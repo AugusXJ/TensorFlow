@@ -117,7 +117,7 @@ class gameEnv():
             if obj.name == 'hero':
                 hero = obj
             else:
-                others.append(hero)
+                others.append(obj)
         for other in others:
             if hero.x == other.x and hero.y == other.y:
                 self.objects.remove(other)
@@ -153,19 +153,19 @@ class Qnetwork():
     def __init__(self, h_size):
         self.scalarInput = tf.placeholder(shape=[None, 21168], dtype=tf.float32)
         self.imageIn = tf.reshape(self.scalarInput, shape=[-1, 84, 84, 3])
-        self.conv1 = tf.contrib.layers.convolition2d(
+        self.conv1 = tf.contrib.layers.convolution2d(
             inputs=self.imageIn, num_outputs=32, kernel_size=[8, 8], stride=[4, 4],
             padding='VALID', biases_initializer=None
         )
-        self.conv2 = tf.contrib.layers.convolition2d(
+        self.conv2 = tf.contrib.layers.convolution2d(
             inputs=self.conv1, num_outputs=64, kernel_size=[4, 4], stride=[2, 2],
             padding='VALID', biases_initializer=None
         )
-        self.conv3 = tf.contrib.layers.convolition2d(
+        self.conv3 = tf.contrib.layers.convolution2d(
             inputs=self.conv2, num_outputs=64, kernel_size=[3, 3], stride=[1, 1],
             padding='VALID', biases_initializer=None
         )
-        self.conv4 = tf.contrib.layers.convolition2d(
+        self.conv4 = tf.contrib.layers.convolution2d(
             inputs=self.conv3, num_outputs=512, kernel_size=[7, 7], stride=[1, 1],
             padding='VALID', biases_initializer=None
         )
@@ -232,18 +232,16 @@ def updateTarget(op_holder, sess):
 batch_size = 32
 update_freq = 4             # 每隔多少步更新一次模型参数
 y = .99                     # Q值得衰减系数
-startE = 1                  # 初始时执行随机行为的概率
+startE = 1.                  # 初始时执行随机行为的概率
 endE = 0.1                  # 最终执行随机行为的概率
 anneling_steps = 10000.     # 从初始随机行为到最终随机行为所需步数
-num_episodes = 10000        # 总共需要多少次
+num_episodes = 10000        # 总共需要多少次游戏
 pre_train_steps = 10000     # 正式使用DQN选择action前需要多少步随机action
 max_epLength = 50           # 每个episode进行多少步action
 load_model = False          # 是否读取之前训练的模型
 path = "./dqn"              # 模型存储的路径
 h_size = 512                # DQN网络最后的全连接层隐含节点数
 tau = 0.001                 # target DQN向主DQN学习的速率
-
-
 
 
 if __name__ == '__main__':
@@ -265,7 +263,7 @@ if __name__ == '__main__':
         os.makedirs(path)
 
     with tf.Session() as sess:
-        if load_model == True:
+        if load_model is True:
             print('Loading Model ......')
             ckpt = tf.train.get_checkpoint_state(path)
             saver.restore(sess, ckpt.model_checkpoint_path)
@@ -283,7 +281,7 @@ if __name__ == '__main__':
                 if np.random.rand(1) < e or total_steps < pre_train_steps:
                     a = np.random.randint(0, 4)
                 else:
-                    a = sess.run(mainQN.predict, feed_dict={mainQN.scalarInputs})[0]
+                    a = sess.run(mainQN.predict, feed_dict={mainQN.scalarInput: [s]})[0]
                 s1, r, d = env.step(a)
                 s1 = processState(s1)
                 total_steps += 1
@@ -291,19 +289,29 @@ if __name__ == '__main__':
                 if total_steps > pre_train_steps:
                     if e > endE:
                         e -= stepDrop
-                    if total_steps % (update_freq) == 0:
+                    if total_steps % update_freq == 0:                                # 开始训练
                         trainBatch = myBuffer.sample(batch_size)
-                        A = sess.run(mainQN.predict, feed_dict={mainQN.scalarInput:np.vstack(trainBatch[:, 3])})
-                        Q = sess.run(targetQN.Qout, feed_dict={targetQN.scalarInput:np.vstack(trainBatch[:, 3])})
+                        A = sess.run(mainQN.predict,
+                                     feed_dict={mainQN.scalarInput: np.vstack(trainBatch[:, 3])})       # 主模型的action
+                        Q = sess.run(targetQN.Qout,
+                                     feed_dict={targetQN.scalarInput: np.vstack(trainBatch[:, 3])})     # 所有action的Q
                         doubleQ = Q[range(batch_size), A]
                         targetQ = trainBatch[:, 2] + y * doubleQ
                         _ = sess.run(mainQN.updateModel, feed_dict={
-                            mainQN.scalarInput: np.vstack(trainBatch[:, 1]),
+                            mainQN.scalarInput: np.vstack(trainBatch[:, 0]),
                             mainQN.targetQ: targetQ,
                             mainQN.actions: trainBatch[:, 1]
                         })
                         updateTarget(targetOps, sess)
                 rAll += r
                 s = s1
-                if d == True:
+                if d is True:
                     break
+            myBuffer.add(episodeBuffer.buffer)
+            rList.append(rAll)
+            if i > 0 and i % 25 == 0:
+                print('episode', i, ', average reward of last 25 episode', np.mean(rList[-25:]))
+            if i > 0 and i % 1000 == 0:
+                saver.save(sess, path + '/model-' + str(i) + '.cpkt')
+                print("Saved Model")
+        saver.save(sess, path + 'model-' + str(i) + '.cpkt')
