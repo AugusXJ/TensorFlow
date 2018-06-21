@@ -18,5 +18,5 @@ TensorFlow的一些练习
     - [minist_deep_learn.py](tensorflow文档/minist_deep_learn.py)：卷积网络实现手写数字
 - [ 《强化学习》](强化学习)
     - [policy_based](强化学习/policy_based)：基于策略方法的强化学习
-    - [value_based](value_based)：值迭代强化学习
+    - [value_based](强化学习/value_based)：值迭代强化学习
 	- [sonic_RL](sonic_RL)：openAL开设的索尼刺猬的强化学习比赛
